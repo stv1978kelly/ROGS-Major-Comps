@@ -10,7 +10,1094 @@
 body{background:#fff;color:#1a1a1a;font-family:'Source Sans 3',sans-serif;padding:1.5rem}
 .app{max-width:980px;margin:0 auto;padding:1rem 0 3rem}
 
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valero Texas Open 2026 · Fantasy Leaderboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Source+Sans+3:wght@400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;color:#1a1a1a;font-family:'Source Sans 3',sans-serif;padding:1.5rem}
+.app{max-width:980px;margin:0 auto;padding:1rem 0 3rem}
+
 .header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;padding-bottom:1.25rem;border-bottom:1px solid #e8e8e8}
+.title{font-family:'Playfair Display',serif;font-size:26px;letter-spacing:-0.3px}
+.title span{color:#B8510D}
+.subtitle{font-size:12px;color:#777;margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
+.badge-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}
+.badge{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.badge-orange{background:#FEF0E6;color:#B8510D;border:1px solid #F5B985}
+.badge-gold{background:#FAEEDA;color:#854F0B;border:1px solid #FAC775}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.admin-status{font-size:11px;color:#B8510D;font-weight:500}
+
+.config-banner{background:#fff8e6;border:1px solid #FAC775;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem;font-size:13px;color:#854F0B;line-height:1.6}
+.config-banner strong{font-weight:600}
+.config-banner code{background:#fff;border:1px solid #FAC775;border-radius:4px;padding:1px 6px;font-family:'Source Code Pro',monospace;font-size:12px}
+.config-banner.hidden{display:none}
+.setup-form{display:flex;flex-direction:column;gap:8px;margin-top:.75rem}
+.setup-input{font-family:'Source Code Pro',monospace;font-size:12px;padding:7px 10px;border:1px solid #FAC775;border-radius:6px;background:#fff;color:#1a1a1a;outline:none;width:100%}
+.setup-input:focus{border-color:#BA7517;box-shadow:0 0 0 2px rgba(186,117,23,.15)}
+.btn-setup{background:#BA7517;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:500;cursor:pointer;width:100%;margin-top:4px}
+.btn-setup:hover{background:#854F0B}
+.setup-note{font-size:11px;color:#aaa;margin-top:4px}
+
+.tabs{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:2px solid #e8e8e8}
+.tab{font-size:13px;font-weight:500;padding:9px 18px;cursor:pointer;color:#888;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s}
+.tab.active{color:#B8510D;border-bottom-color:#B8510D}
+.tab:hover{color:#1a1a1a}
+.panel{display:none}.panel.active{display:block}
+
+.form-card{background:#fafafa;border:1px solid #e8e8e8;border-radius:12px;padding:1.5rem;margin-bottom:1.25rem}
+.form-section-title{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem}
+.form-top{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+.field-group label{font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px}
+.field-group input{width:100%;font-family:'Source Sans 3',sans-serif;font-size:14px;padding:9px 12px;border:1px solid #d0d0d0;border-radius:8px;background:#fff;color:#1a1a1a;outline:none;transition:border .15s,box-shadow .15s}
+.field-group input:focus{border-color:#B8510D;box-shadow:0 0 0 3px rgba(184,81,13,.1)}
+
+.picks-label{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem}
+.picks-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:1.25rem}
+.pick-slot label{font-size:10px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
+.psw{position:relative}
+.psw input{width:100%;font-family:'Source Sans 3',sans-serif;font-size:13px;padding:8px 26px 8px 10px;border:1px solid #d0d0d0;border-radius:8px;background:#fff;color:#1a1a1a;outline:none;transition:border .15s,box-shadow .15s}
+.psw input:focus{border-color:#B8510D;box-shadow:0 0 0 3px rgba(184,81,13,.1)}
+.psw input.has-value{background:#FEF0E6;color:#B8510D;border-color:#F5B985;font-weight:500}
+.psw .caret{position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;color:#bbb;font-size:9px}
+.dd{position:absolute;top:calc(100% + 3px);left:0;right:0;background:#fff;border:1px solid #d0d0d0;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.12);z-index:9999;max-height:220px;overflow-y:auto;display:none}
+.dd.open{display:block}
+.ddi{padding:8px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f5f5f5;color:#1a1a1a;transition:background .08s}
+.ddi:last-child{border-bottom:none}
+.ddi:hover,.ddi.hi{background:#FEF0E6;color:#B8510D}
+.ddi.sel{font-weight:600;color:#B8510D;background:#fff5ee}
+.ddi.add-custom{color:#B8510D;font-style:italic;background:#fff5ee;border-top:1px solid #e0e0e0}
+.ddi.add-custom:hover{background:#FEF0E6}
+.dd-empty{padding:9px 12px;font-size:12px;color:#bbb;font-style:italic}
+
+.btn{font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;cursor:pointer;border:1px solid #ccc;background:#fff;color:#1a1a1a;transition:background .15s}
+.btn:hover{background:#f5f5f5}
+.btn-primary{background:#B8510D;color:#fff;border-color:#B8510D}
+.btn-primary:hover{background:#8C3D09}
+.btn-sm{font-size:11px;padding:5px 12px}
+.btn-danger{color:#A32D2D;border-color:#e0e0e0}
+.btn-danger:hover{background:#FCEBEB;border-color:#F09595}
+.btn-admin{background:#1a1a1a;color:#fff;border-color:#1a1a1a;font-size:11px;padding:5px 12px}
+.btn-admin:hover{background:#333}
+.form-msg{font-size:12px;color:#A32D2D}
+.form-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+.entries-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:8px}
+.entries-count{font-size:12px;color:#888;font-weight:500}
+.entries-list{display:flex;flex-direction:column;gap:8px}
+.entry-row{background:#fafafa;border:1px solid #e8e8e8;border-radius:10px;padding:12px 16px;display:flex;align-items:center;flex-wrap:wrap;gap:10px;transition:border-color .2s,background .2s}
+.entry-row.unpaid{background:#fff5f5;border-color:#F09595}
+.entry-row.unpaid .entry-name{color:#A32D2D}
+.entry-name{font-weight:600;font-size:14px;min-width:130px}
+.entry-picks{display:flex;flex-wrap:wrap;gap:5px;flex:1}
+.pick-chip{font-size:11px;padding:3px 9px;background:#fff;border:1px solid #e0e0e0;border-radius:20px;color:#555}
+.pick-chip.hidden-pick{background:#f5f5f5;color:#bbb;border-color:#e8e8e8;font-style:italic}
+.entry-row.unpaid .pick-chip{border-color:#F09595;color:#A32D2D;background:#fff}
+.entry-meta{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.entry-tb{font-size:11px;color:#aaa;font-family:'Source Code Pro',monospace}
+.paid-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em}
+.paid-badge.paid{background:#EAF3DE;color:#3B6D11;border:1px solid #97C459}
+.paid-badge.unpaid{background:#FCEBEB;color:#A32D2D;border:1px solid #F09595}
+.no-entries{padding:2.5rem;text-align:center;color:#bbb;font-size:13px;border:1px dashed #e0e0e0;border-radius:10px}
+.hidden-notice{font-size:11px;color:#aaa;background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;padding:8px 12px;margin-bottom:.75rem;text-align:center}
+
+.admin-panel{background:#fafafa;border:1px solid #e8e8e8;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.admin-title{font-size:12px;font-weight:600;color:#1a1a1a;text-transform:uppercase;letter-spacing:.07em}
+.admin-subtitle{font-size:11px;color:#999;margin-top:2px}
+.admin-actions{display:flex;gap:8px;align-items:center}
+.admin-logout{font-size:11px;color:#888;cursor:pointer;text-decoration:underline}
+.admin-list{display:flex;flex-direction:column;gap:6px}
+.admin-entry-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#fff;border:1px solid #ebebeb;border-radius:8px;flex-wrap:wrap;gap:8px}
+.admin-entry-row.unpaid-row{border-color:#F09595;background:#fff8f8}
+.admin-name{font-size:13px;font-weight:500}
+.admin-name.red{color:#A32D2D}
+.payment-toggle{display:flex;align-items:center;gap:6px}
+.toggle-label{font-size:11px;color:#888}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#e0e0e0;border-radius:22px;transition:.2s}
+.slider:before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+input:checked+.slider{background:#3B6D11}
+input:checked+.slider:before{transform:translateX(18px)}
+.admin-paid-label{font-size:11px;font-weight:600;min-width:52px}
+.admin-paid-label.paid{color:#3B6D11}
+.admin-paid-label.unpaid{color:#A32D2D}
+.admin-section-title{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.07em;margin:1rem 0 .5rem}
+.reveal-btn{background:#1a1a1a;color:#fff;border:none;border-radius:6px;padding:7px 14px;font-family:'Source Sans 3',sans-serif;font-size:12px;font-weight:500;cursor:pointer}
+.reveal-btn:hover{background:#333}
+.reveal-btn.revealed{background:#B8510D}
+
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:10000}
+.modal-overlay.hidden{display:none}
+.modal-box{background:#fff;border-radius:14px;padding:2rem;width:320px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-title{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:.5rem}
+.modal-sub{font-size:12px;color:#888;margin-bottom:1.25rem}
+.modal-input{width:100%;font-family:'Source Code Pro',monospace;font-size:22px;letter-spacing:.2em;text-align:center;padding:12px;border:1px solid #d0d0d0;border-radius:8px;outline:none;color:#1a1a1a;transition:border .15s}
+.modal-input:focus{border-color:#B8510D;box-shadow:0 0 0 3px rgba(184,81,13,.1)}
+.modal-input.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.modal-error{font-size:12px;color:#A32D2D;margin-top:8px;min-height:18px;text-align:center}
+.modal-actions{display:flex;gap:8px;margin-top:1.25rem}
+.modal-actions .btn{flex:1}
+
+.lb-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.lb-live{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:#FCEBEB;color:#A32D2D;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.last-updated{font-size:11px;color:#bbb;margin-top:3px}
+.err-note{font-size:11px;color:#A32D2D;margin-top:3px}
+.refresh-group{display:flex;align-items:center;gap:8px}
+.countdown{font-size:11px;color:#ccc;font-family:'Source Code Pro',monospace}
+.table-wrap{border:1px solid #e8e8e8;border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:#f5f5f5}
+thead th{padding:9px 14px;font-size:10px;font-weight:600;color:#999;text-align:left;letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid #e8e8e8}
+th.r,td.r{text-align:right}
+tbody tr{border-bottom:1px solid #f2f2f2;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#fafafa}
+tbody tr.rank-1 td:first-child{border-left:3px solid #BA7517}
+tbody tr.rank-2 td:first-child{border-left:3px solid #888780}
+tbody tr.row-unpaid{background:#fff5f5}
+tbody tr.row-unpaid:hover{background:#ffe8e8}
+tbody tr.row-unpaid td.name-cell .nm{color:#A32D2D}
+td{padding:11px 14px;vertical-align:middle}
+.pos-cell{font-family:'Source Code Pro',monospace;font-size:12px;font-weight:500;color:#ccc;width:36px}
+.pos-1{color:#BA7517!important}
+.pos-2{color:#888780!important}
+.name-cell .nm{font-weight:600;font-size:14px}
+.name-cell .tb-hint{font-size:10px;color:#ccc;font-family:'Source Code Pro',monospace;margin-top:2px}
+.name-cell .unpaid-flag{font-size:9px;font-weight:600;color:#A32D2D;text-transform:uppercase;letter-spacing:.06em;margin-left:6px;padding:1px 5px;background:#FCEBEB;border-radius:3px;border:1px solid #F09595;vertical-align:middle}
+.agg{font-family:'Source Code Pro',monospace;font-size:16px;font-weight:500}
+.agg-gold{color:#BA7517}
+.agg-silver{color:#888780}
+.agg-pending{color:#ddd;font-size:13px;font-family:'Source Code Pro',monospace}
+.pchips{display:flex;flex-wrap:wrap;gap:4px}
+.pc{font-size:10px;padding:2px 7px;border-radius:4px;font-family:'Source Code Pro',monospace;border:1px solid #ebebeb;color:#aaa;background:#fafafa;white-space:nowrap}
+.pc.ok{background:#FEF0E6;color:#B8510D;border-color:#F5B985;font-weight:500}
+.pc.mc{color:#ccc;text-decoration:line-through}
+.pc.wd{color:#A32D2D;border-color:#F09595;background:#FCEBEB}
+.pc.unk{color:#ddd;font-style:italic}
+.pc.hidden-pc{color:#ccc;font-style:italic;background:#f9f9f9}
+.spinner{width:14px;height:14px;border:2px solid #e0e0e0;border-top-color:#888;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-lb{padding:3rem;text-align:center;color:#bbb;font-size:13px}
+.note-bar{margin-top:10px;font-size:11px;color:#ccc;line-height:1.7}
+.sync-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#B8510D;margin-right:5px;vertical-align:middle}
+.sync-status{font-size:11px;color:#B8510D;margin-top:4px}
+.sync-status.err{color:#A32D2D}
+
+@media (max-width: 600px) {
+  body{padding:.75rem}
+  .app{padding:.5rem 0 2rem}
+  .header{flex-direction:column;align-items:flex-start;gap:8px}
+  .header-right{flex-direction:row;align-items:center;gap:8px;width:100%}
+  .title{font-size:21px}
+  .subtitle{font-size:11px}
+  .badge{font-size:9px;padding:2px 7px}
+  .btn-admin{font-size:11px;padding:5px 11px}
+  .tab{padding:8px 12px;font-size:12px}
+  .form-card{padding:1rem}
+  .form-top{grid-template-columns:1fr !important}
+  .picks-grid{grid-template-columns:1fr !important;gap:8px}
+  .pick-slot{display:flex;align-items:center;gap:10px}
+  .pick-slot label{width:52px;flex-shrink:0;margin-bottom:0;font-size:10px}
+  .pick-slot .psw{flex:1;min-width:0}
+  .psw input{font-size:15px;padding:11px 30px 11px 12px}
+  .dd{position:fixed;left:1rem;right:1rem;top:auto;max-height:240px;z-index:99999;font-size:15px}
+  .ddi{padding:12px 14px;font-size:15px;line-height:1.2;white-space:normal}
+  .entry-row{flex-direction:column;align-items:flex-start;gap:8px;padding:12px}
+  .entry-name{min-width:unset;font-size:15px;width:100%}
+  .entry-picks{width:100%;display:flex;flex-wrap:wrap;gap:5px}
+  .pick-chip{font-size:12px;padding:4px 10px}
+  .entry-meta{width:100%;flex-wrap:wrap;gap:6px;justify-content:flex-start}
+  .entries-header{flex-direction:column;align-items:flex-start;gap:8px}
+  .entries-header .btn-sm{width:100%;text-align:center;padding:9px}
+  .admin-entry-row{flex-direction:column;align-items:flex-start;gap:8px}
+  .payment-toggle{flex-wrap:wrap;gap:6px}
+  thead th,td{padding:7px 6px}
+  .name-cell .nm{font-size:12px}
+  .agg{font-size:13px}
+  .pchips{gap:3px}
+  .pc{font-size:9px;padding:2px 5px}
+  .pos-cell{width:24px;font-size:11px}
+  .lb-topbar{flex-direction:column;align-items:flex-start;gap:8px}
+  .refresh-group{width:100%}
+  .modal-box{width:calc(100vw - 2rem);padding:1.5rem}
+  .modal-title{font-size:18px}
+  .btn{padding:9px 14px;font-size:13px}
+  .btn-primary{padding:11px 18px}
+  .form-actions{flex-direction:column;gap:8px}
+  .form-actions .btn-primary{width:100%;text-align:center}
+  .hidden-notice{font-size:12px;padding:8px 10px}
+  .note-bar{font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<div class="modal-overlay hidden" id="pinModal">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">Admin access</div>
+    <div class="modal-sub" id="modalSub">Enter your PIN to manage entries and payments</div>
+    <input class="modal-input" type="password" id="pinInput" placeholder="••••"
+      onkeydown="if(event.key==='Enter')checkPin()">
+    <div class="modal-error" id="pinError"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="checkPin()">Enter</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="editModal">
+  <div class="modal-box">
+    <div class="modal-title">Edit your entry</div>
+    <div class="modal-sub" id="editModalSub">Enter the 4-digit PIN you set when you submitted. No PIN set? Enter any 4 digits to create one.</div>
+    <input class="modal-input" type="password" id="editPinInput" maxlength="4" placeholder="••••"
+      oninput="this.value=this.value.replace(/\D/g,'')"
+      onkeydown="if(event.key==='Enter')checkEditPin()">
+    <div class="modal-error" id="editPinError"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="checkEditPin()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+
+  <div class="header">
+    <div>
+      <div class="title">Valero <span>Texas Open</span> 2026</div>
+      <div class="subtitle">TPC San Antonio · April 3–6, 2026</div>
+      <div class="badge-row">
+        <span class="badge badge-orange">Best 4 of 5 picks</span>
+        <span class="badge badge-gold">Lowest aggregate wins</span>
+        <span class="badge badge-orange">£5 per entry</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-admin" id="adminToggleBtn" onclick="adminAction()">🔒 Admin</button>
+      <div class="admin-status hidden" id="adminStatus">Admin mode active</div>
+      <div class="sync-status" id="syncStatus"></div>
+    </div>
+  </div>
+<div class="setup-note">Only needs to be done once. Live score fetching is already configured.</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('entries',this)">Entries</button>
+    <button class="tab" onclick="showTab('leaderboard',this)">Leaderboard</button>
+  </div>
+
+  <div class="panel active" id="tab-entries">
+
+    <div class="admin-panel hidden" id="adminPanel">
+      <div class="admin-header">
+        <div>
+          <div class="admin-title">Admin controls</div>
+          <div class="admin-subtitle">Manage payments · Reveal picks when tournament starts</div>
+        </div>
+        <div class="admin-actions">
+          <span class="admin-logout" onclick="logoutAdmin()">Log out</span>
+        </div>
+      </div>
+      <div class="admin-section-title">Picks visibility</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem">
+        <button class="reveal-btn" id="revealBtn" onclick="toggleReveal()">🔒 Picks hidden</button>
+        <span style="font-size:12px;color:#888">Click to reveal all picks once the tournament has started</span>
+      </div>
+      <div class="admin-section-title">Payment status</div>
+      <div class="admin-list" id="adminList"></div>
+    </div>
+
+    <div class="form-card" id="entryFormCard">
+      <div class="form-section-title">Submit your entry</div>
+      <div class="form-top">
+        <div class="field-group"><label>Your name</label><input type="text" id="entrantName" placeholder="e.g. John Smith" autocomplete="off"></div>
+        <div class="field-group"><label>Tiebreaker (winning score)</label><input type="number" id="tiebreaker" placeholder="e.g. -18"></div>
+      </div>
+      <div class="form-top">
+        <div class="field-group">
+          <label>Your 4-digit PIN <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#aaa">(to edit your picks later)</span></label>
+          <input type="password" id="entryPin" maxlength="4" placeholder="e.g. 1234" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'')">
+        </div>
+      </div>
+      <div class="picks-label">Your 5 player picks — hidden from others until the tournament starts</div>
+      <div class="picks-grid" id="picksGrid"></div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="addEntry()">Submit entry</button>
+        <span class="form-msg" id="formMsg"></span>
+      </div>
+    </div>
+
+    <div class="entries-header">
+      <div class="entries-count" id="entriesCount"></div>
+      <button class="btn btn-sm" onclick="showTab('leaderboard',document.querySelectorAll('.tab')[1])">View leaderboard →</button>
+    </div>
+    <div id="hiddenNotice" class="hidden-notice hidden">🔒 Picks are hidden until the tournament starts — only you can see your own picks</div>
+    <div id="lockedNotice" class="hidden-notice hidden" style="background:#FEF0E6;border-color:#F5B985;color:#B8510D">🏌️ Tournament is underway — entries are locked. <strong style="cursor:pointer;text-decoration:underline" onclick="showTab('leaderboard',document.querySelectorAll('.tab')[1])">View leaderboard →</strong></div>
+    <div id="entriesList"><div class="no-entries">No entries yet. Be the first to submit above.</div></div>
+  </div>
+
+  <div class="panel" id="tab-leaderboard">
+    <div class="lb-topbar">
+      <div>
+        <div class="lb-live"><span class="live-dot"></span>Live — Valero Texas Open</div>
+        <div class="last-updated" id="lastUpdated">Scores not yet fetched — click Refresh when tournament begins Thu 3 Apr</div>
+        <div class="err-note" id="errNote"></div>
+      </div>
+      <div class="refresh-group">
+        <span class="countdown" id="countdown"></span>
+        <button class="btn btn-sm" id="refreshBtn" onclick="fetchScores()">↻ Refresh scores</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Pos</th>
+          <th>Entry</th>
+          <th class="r" style="width:100px">Aggregate</th>
+          <th>Player positions</th>
+        </tr></thead>
+        <tbody id="lbBody">
+          <tr><td colspan="4" class="empty-lb">Add entries then click ↻ Refresh scores once the tournament begins.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note-bar">
+      Positions = current/final leaderboard position. Orange chip = counts towards aggregate (best 4 of 5). Strikethrough = missed cut. Lowest aggregate wins. Tiebreaker = closest predicted winning score. Red rows = payment not confirmed.
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
+
+<script>
+const ADMIN_PIN       = '25039160';
+const REVEAL_PASSWORD = 'ROGs25039160!!';
+const TOURNEY_START   = new Date('2026-04-03T12:00:00Z'); // Thu 3 Apr 12:00 UTC
+
+const FIELD_BASE = {
+  "Ludvig Åberg":               "SWE",
+  "Akshay Bhatia":              "USA",
+  "Daniel Berger":              "USA",
+  "Christiaan Bezuidenhout":    "RSA",
+  "Chandler Blanchet":          "USA",
+  "Dan Brown":                  "ENG",
+  "Bronson Burgoon":            "USA",
+  "Rafael Campos":              "PUR",
+  "Bud Cauley":                 "USA",
+  "Ricky Castillo":             "USA",
+  "Davis Chatfield":            "USA",
+  "Luke Clanton":               "USA",
+  "Eric Cole":                  "USA",
+  "Pierceson Coody":            "USA",
+  "Zach Dou (Zecheng)":        "CHN",
+  "Adrien Dumont de Chassart":  "BEL",
+  "Nick Dunlap":                "USA",
+  "Austin Eckroat":             "USA",
+  "A.J. Ewart":                 "USA",
+  "Tony Finau":                 "USA",
+  "Steven Fisk":                "USA",
+  "Patrick Fishburn":           "USA",
+  "Tommy Fleetwood":            "ENG",
+  "David Ford":                 "USA",
+  "Rickie Fowler":              "USA",
+  "Brice Garnett":              "USA",
+  "Ryan Gerard":                "USA",
+  "Doug Ghim":                  "USA",
+  "Lucas Glover":               "USA",
+  "Emiliano Grillo":            "ARG",
+  "Garrick Higgo":              "RSA",
+  "Joe Highsmith":              "USA",
+  "Kensei Hirata":              "JPN",
+  "Ryo Hisatsune":              "JPN",
+  "Charley Hoffman":            "USA",
+  "Lee Hodges":                 "USA",
+  "Tom Hoge":                   "USA",
+  "Max Homa":                   "USA",
+  "Billy Horschel":             "USA",
+  "Beau Hossler":               "USA",
+  "Mark Hubbard":               "USA",
+  "Mackenzie Hughes":           "CAN",
+  "Stephan Jaeger":             "GER",
+  "Jeffrey Kang":               "USA",
+  "Takumi Kanaya":              "JPN",
+  "Tom Kim":                    "KOR",
+  "Si Woo Kim":                 "KOR",
+  "Michael Kim":                "USA",
+  "S.H. Kim":                   "KOR",
+  "Chris Kirk":                 "USA",
+  "Patton Kizzire":             "USA",
+  "Christo Lamprecht":          "RSA",
+  "Hank Lebioda":               "USA",
+  "Haotong Li":                 "CHN",
+  "David Lipsky":               "USA",
+  "Robert MacIntyre":           "SCO",
+  "Peter Malnati":              "USA",
+  "Hideki Matsuyama":           "JPN",
+  "Matt McCarty":               "USA",
+  "Denny McCarthy":             "USA",
+  "Max McGreevy":               "USA",
+  "Mac Meissner":               "USA",
+  "Keith Mitchell":             "USA",
+  "Collin Morikawa":            "USA",
+  "William Mouw":               "USA",
+  "Alex Noren":                 "SWE",
+  "Andrew Novak":               "USA",
+  "Pontus Nyholm":              "SWE",
+  "Thorbjørn Olesen":           "DEN",
+  "Ryan Palmer":                "USA",
+  "John Parry":                 "ENG",
+  "Matthieu Pavon":             "FRA",
+  "Marco Penge":                "ENG",
+  "Chandler Phillips":          "USA",
+  "J.T. Poston":                "USA",
+  "Andrew Putnam":              "USA",
+  "Chad Ramey":                 "USA",
+  "Kristoffer Reitan":          "NOR",
+  "Patrick Rodgers":            "USA",
+  "Kevin Roy":                  "USA",
+  "Marcelo Rozo":               "COL",
+  "Adrien Saddier":             "FRA",
+  "Isaiah Salinda":             "USA",
+  "Gordon Sargent":             "USA",
+  "Adam Schenk":                "USA",
+  "Matti Schmid":               "GER",
+  "Neal Shipley":               "USA",
+  "Webb Simpson":               "USA",
+  "Alex Smalley":               "USA",
+  "Jordan Smith":               "ENG",
+  "Austin Smotherman":          "USA",
+  "J.J. Spaun":                 "USA",
+  "Jordan Spieth":              "USA",
+  "Jimmy Stanger":              "USA",
+  "Kevin Streelman":            "USA",
+  "Sepp Straka":                "AUT",
+  "Adam Svensson":              "CAN",
+  "Jesper Svensson":            "SWE",
+  "Nick Taylor":                "CAN",
+  "Davis Thompson":             "USA",
+  "Michael Thorbjornsen":       "USA",
+  "Brendon Todd":               "USA",
+  "Alejandro Tosti":            "ARG",
+  "John VanDerLaan":            "USA",
+  "Sami Valimaki":              "FIN",
+  "Erik van Rooyen":            "RSA",
+  "Jhonattan Vegas":            "VEN",
+  "Kris Ventura":               "PHI",
+  "Karl Vilips":                "AUS",
+  "Camilo Villegas":            "COL",
+  "Danny Walker":               "USA",
+  "Jimmy Walker":               "USA",
+  "Matt Wallace":               "ENG",
+  "Paul Waring":                "ENG",
+  "Vince Whaley":               "USA",
+  "Aaron Wise":                 "USA",
+  "Dylan Wu":                   "USA",
+  "Austin Wylie":               "USA",
+  "Sudarshan Yellamaraju":      "USA",
+  "Kevin Yu":                   "TPE",
+  "Will Zalatoris":             "USA",
+  "K.H. Lee":                   "KOR",
+  "Brian Harman":               "USA",
+  "Russell Henley":             "USA"
+};
+
+let db = null;
+let entries = [];
+let customPlayers = [];
+let picksRevealed = false;
+let playerPositions = {};
+let cdTimer = null, cdCount = 60;
+let adminLoggedIn = false;
+let modalMode = 'admin';
+let editingEntryId = null;
+const N = 5;
+
+function getField() {
+  const names = [...Object.keys(FIELD_BASE), ...customPlayers];
+  return names.sort((a,b)=>{
+    const sa=a.split(' ').pop().replace(/[^a-zA-Z]/g,'').toLowerCase();
+    const sb=b.split(' ').pop().replace(/[^a-zA-Z]/g,'').toLowerCase();
+    return sa.localeCompare(sb);
+  });
+}
+function getCountry(name) { return FIELD_BASE[name] || ''; }
+function picksVisible() { return picksRevealed || new Date() >= TOURNEY_START || adminLoggedIn; }
+
+function getWorkerUrl() {
+  return 'https://twilight-block-adfe.steve-013.workers.dev';
+}
+
+function initFirebase(url) {
+  try {
+    const app = firebase.initializeApp({ databaseURL: url }, 'valero2026');
+    db = firebase.database(app);
+    // firebase connected
+    setSyncStatus('Connected to Firebase', false);
+    listenToData();
+  } catch(e) {
+    setSyncStatus('Firebase error: ' + e.message, true);
+  }
+}
+
+function setSyncStatus(msg, isErr) {
+  const el = document.getElementById('syncStatus');
+  el.textContent = msg;
+  el.className = 'sync-status' + (isErr ? ' err' : '');
+}
+
+function listenToData() {
+  if (!db) return;
+  db.ref('entries').on('value', snap => {
+    const val = snap.val();
+    entries = val ? Object.entries(val).map(([id, e]) => ({...e, _id: id})) : [];
+    entries.sort((a,b) => (a._ts||0) - (b._ts||0));
+    renderEntries();
+    renderLeaderboard();
+    if (adminLoggedIn) renderAdminList();
+    setSyncStatus('Live sync active', false);
+  });
+  db.ref('meta/picksRevealed').on('value', snap => {
+    picksRevealed = snap.val() === true;
+    updateRevealBtn();
+    renderEntries();
+    renderLeaderboard();
+  });
+  db.ref('meta/customPlayers').on('value', snap => {
+    customPlayers = snap.val() ? Object.values(snap.val()) : [];
+  });
+}
+
+function showTab(t, btn) {
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (t === 'leaderboard') renderLeaderboard();
+}
+
+function adminAction() {
+  if (adminLoggedIn) { toggleAdminPanel(); }
+  else { openModal('admin'); }
+}
+
+function openModal(mode) {
+  modalMode = mode;
+  const inp = document.getElementById('pinInput');
+  const title = document.getElementById('modalTitle');
+  const sub = document.getElementById('modalSub');
+  inp.value = '';
+  document.getElementById('pinError').textContent = '';
+  if (mode === 'admin') {
+    inp.maxLength = 20;
+    inp.setAttribute('oninput', "this.value=this.value.replace(/\\D/g,'')");
+    title.textContent = 'Admin access';
+    sub.textContent = 'Enter your admin PIN to manage entries and payments';
+  } else if (mode === 'reveal') {
+    inp.maxLength = 50;
+    inp.removeAttribute('oninput');
+    title.textContent = 'Reveal picks';
+    sub.textContent = 'Enter the master password to reveal all picks';
+  }
+  document.getElementById('pinModal').classList.remove('hidden');
+  setTimeout(()=>inp.focus(), 100);
+}
+
+function closeModal() { document.getElementById('pinModal').classList.add('hidden'); }
+
+function checkPin() {
+  const val = document.getElementById('pinInput').value;
+  if (modalMode === 'admin') {
+    if (val === ADMIN_PIN) {
+      closeModal();
+      adminLoggedIn = true;
+      document.getElementById('adminToggleBtn').textContent = '🔓 Admin';
+      document.getElementById('adminStatus').classList.remove('hidden');
+      document.getElementById('adminPanel').classList.remove('hidden');
+      renderAdminList(); renderEntries(); renderLeaderboard();
+    } else { shakeModal('pinInput','pinError','Incorrect PIN. Try again.'); }
+  } else if (modalMode === 'reveal') {
+    if (val === REVEAL_PASSWORD) {
+      closeModal();
+      if (!db) return;
+      db.ref('meta/picksRevealed').set(!picksRevealed);
+    } else { shakeModal('pinInput','pinError','Incorrect password.'); }
+  }
+}
+
+function shakeModal(inputId, errorId, msg) {
+  const inp = document.getElementById(inputId);
+  inp.classList.add('shake');
+  document.getElementById(errorId).textContent = msg;
+  inp.value = '';
+  setTimeout(()=>inp.classList.remove('shake'), 400);
+}
+
+function toggleAdminPanel() { document.getElementById('adminPanel').classList.toggle('hidden'); }
+function logoutAdmin() {
+  adminLoggedIn = false;
+  document.getElementById('adminToggleBtn').textContent = '🔒 Admin';
+  document.getElementById('adminStatus').classList.add('hidden');
+  document.getElementById('adminPanel').classList.add('hidden');
+  renderEntries(); renderLeaderboard();
+}
+function toggleReveal() { openModal('reveal'); }
+
+function openEditModal(entryId) {
+  editingEntryId = entryId;
+  document.getElementById('editPinInput').value = '';
+  document.getElementById('editPinError').textContent = '';
+  document.getElementById('editModal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('editPinInput').focus(), 100);
+}
+function closeEditModal() {
+  document.getElementById('editModal').classList.add('hidden');
+  editingEntryId = null;
+}
+function checkEditPin() {
+  const val = document.getElementById('editPinInput').value;
+  const entry = entries.find(e => e._id === editingEntryId);
+  if (!entry) { closeEditModal(); return; }
+  if (val === ADMIN_PIN) { closeEditModal(); loadEntryIntoForm(entry); return; }
+  if (!entry.pin) {
+    if (val.length === 4) {
+      if (db) db.ref('entries/' + entry._id + '/pin').set(val);
+      closeEditModal();
+      loadEntryIntoForm({...entry, pin: val});
+    } else {
+      document.getElementById('editPinError').textContent = 'No PIN was set — enter any 4 digits to set one now.';
+    }
+    return;
+  }
+  if (val === String(entry.pin)) {
+    closeEditModal();
+    loadEntryIntoForm(entry);
+  } else {
+    shakeModal('editPinInput','editPinError','Incorrect PIN. (Admin can use admin PIN to override.)');
+  }
+}
+function loadEntryIntoForm(entry) {
+  if (!db) return;
+  document.getElementById('entrantName').value = entry.name;
+  document.getElementById('tiebreaker').value = entry.tb === '?' ? '' : entry.tb;
+  document.getElementById('entryPin').value = entry.pin || '';
+  entry.picks.forEach((p,i)=>{ setPlayer(i+1, p); });
+  document.getElementById('formMsg').textContent = '✏️ Editing your entry — click Submit to save changes';
+  document.getElementById('formMsg').style.color = '#B8510D';
+  document.getElementById('picksGrid').dataset.editingId = entry._id;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateRevealBtn() {
+  const btn = document.getElementById('revealBtn');
+  if (!btn) return;
+  if (picksRevealed) { btn.textContent = '🔓 Picks visible'; btn.classList.add('revealed'); }
+  else { btn.textContent = '🔒 Picks hidden'; btn.classList.remove('revealed'); }
+}
+function togglePaid(id, currentVal) {
+  if (!db) return;
+  db.ref('entries/' + id + '/paid').set(!currentVal);
+}
+
+function renderAdminList() {
+  const el = document.getElementById('adminList');
+  if (!entries.length) {
+    el.innerHTML = '<div style="font-size:13px;color:#bbb;padding:.5rem">No entries yet.</div>';
+    return;
+  }
+  el.innerHTML = entries.map(e => `
+    <div class="admin-entry-row ${e.paid?'':'unpaid-row'}">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0">
+        <div class="admin-name ${e.paid?'':'red'}">${e.name}</div>
+        <span style="font-size:10px;color:${e.pin?'#3B6D11':'#A32D2D'};background:${e.pin?'#EAF3DE':'#FCEBEB'};border:1px solid ${e.pin?'#97C459':'#F09595'};border-radius:20px;padding:1px 7px;font-weight:600">
+          ${e.pin ? 'PIN set' : '⚠ No PIN'}
+        </span>
+      </div>
+      <div class="payment-toggle">
+        <span class="toggle-label">Unpaid</span>
+        <label class="toggle">
+          <input type="checkbox" ${e.paid?'checked':''} onchange="togglePaid('${e._id}', ${e.paid})">
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">Paid</span>
+        <span class="admin-paid-label ${e.paid?'paid':'unpaid'}">${e.paid?'✓ Paid':'✗ Unpaid'}</span>
+        <button class="btn btn-sm" onclick="adminEditEntry('${e._id}')" style="background:#1a1a1a;color:#fff;border-color:#1a1a1a">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="removeEntry('${e._id}')">Remove</button>
+      </div>
+    </div>`).join('');
+}
+
+function adminEditEntry(id) {
+  const entry = entries.find(e => e._id === id);
+  if (!entry) return;
+  loadEntryIntoForm(entry);
+  document.getElementById('adminPanel').classList.add('hidden');
+}
+
+function buildPicks() {
+  const g = document.getElementById('picksGrid');
+  g.innerHTML = '';
+  for (let i=1; i<=N; i++) {
+    const d = document.createElement('div');
+    d.className = 'pick-slot';
+    d.innerHTML = `<label>Pick ${i}</label>
+    <div class="psw" id="psw${i}">
+      <input type="text" id="pi${i}" placeholder="Type to search…" autocomplete="off"
+        oninput="onInput(${i})" onfocus="onFocus(${i})" onkeydown="onKey(event,${i})">
+      <span class="caret">▾</span>
+      <div class="dd" id="dd${i}"></div>
+    </div>`;
+    g.appendChild(d);
+  }
+  document.addEventListener('mousedown', e => {
+    for (let i=1; i<=N; i++) {
+      const w = document.getElementById('psw'+i);
+      if (w && !w.contains(e.target)) closeDd(i);
+    }
+  });
+}
+
+function usedByOthers(skip) {
+  const used = new Set();
+  for (let i=1; i<=N; i++) {
+    if (i===skip) continue;
+    const v = document.getElementById('pi'+i)?.dataset.val||'';
+    if (v) used.add(v);
+  }
+  return used;
+}
+
+function populateDd(idx, filter) {
+  const dd = document.getElementById('dd'+idx);
+  const cur = document.getElementById('pi'+idx)?.dataset.val||'';
+  const blocked = usedByOthers(idx);
+  const f = filter.trim();
+  const fl = f.toLowerCase();
+  const hits = getField().filter(p => !blocked.has(p) && (!f || p.toLowerCase().includes(fl)));
+  let html = hits.map(p => {
+    const hi = p===cur ? ' sel' : '';
+    const country = getCountry(p);
+    const label = f ? p.replace(new RegExp('('+f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<strong>$1</strong>') : p;
+    const badge = country ? `<span style="font-size:9px;font-weight:600;color:#888;background:#f0f0f0;border-radius:3px;padding:1px 5px;margin-right:7px;letter-spacing:.03em;font-family:monospace">${country}</span>` : '';
+    return `<div class="ddi${hi}" data-n="${p.replace(/"/g,'&quot;')}" onmousedown="pickPlayer(${idx},this)">${badge}${label}</div>`;
+  }).join('');
+  if (f && !getField().some(p => p.toLowerCase()===fl) && !blocked.has(f)) {
+    html += `<div class="ddi add-custom" data-n="${f.replace(/"/g,'&quot;')}" onmousedown="addCustomAndPick(${idx},'${f.replace(/'/g,"\\'")}')">+ Add "${f}" as custom player</div>`;
+  }
+  if (!html) html = f
+    ? `<div class="ddi add-custom" data-n="${f.replace(/"/g,'&quot;')}" onmousedown="addCustomAndPick(${idx},'${f.replace(/'/g,"\\'")}')">+ Add "${f}" as custom player</div>`
+    : '<div class="dd-empty">Start typing to search…</div>';
+  dd.innerHTML = html;
+}
+
+function addCustomAndPick(idx, name) {
+  const trimmed = name.trim();
+  if (!trimmed) return;
+  if (!Object.keys(FIELD_BASE).includes(trimmed) && !customPlayers.includes(trimmed)) {
+    customPlayers.push(trimmed);
+    if (db) db.ref('meta/customPlayers').push(trimmed);
+  }
+  setPlayer(idx, trimmed);
+}
+
+function onFocus(idx) { openDd(idx); }
+function onInput(idx) {
+  const inp = document.getElementById('pi'+idx);
+  inp.dataset.val = ''; inp.classList.remove('has-value');
+  openDd(idx); populateDd(idx, inp.value);
+}
+function openDd(idx) {
+  const dd = document.getElementById('dd'+idx);
+  dd.classList.add('open');
+  if (window.innerWidth <= 600) {
+    const inp = document.getElementById('pi'+idx);
+    const rect = inp.getBoundingClientRect();
+    dd.style.top = (rect.bottom + 4) + 'px';
+  } else {
+    dd.style.top = '';
+  }
+  populateDd(idx, document.getElementById('pi'+idx).value);
+}
+function closeDd(idx) {
+  document.getElementById('dd'+idx).classList.remove('open');
+  const inp = document.getElementById('pi'+idx);
+  if (inp && !inp.dataset.val) {
+    const exact = getField().find(p => p.toLowerCase()===inp.value.toLowerCase());
+    if (exact) setPlayer(idx, exact);
+    else { inp.value=''; inp.classList.remove('has-value'); }
+  }
+}
+function pickPlayer(idx, el) { el.preventDefault&&el.preventDefault(); setPlayer(idx, el.dataset.n); }
+function setPlayer(idx, name) {
+  const inp = document.getElementById('pi'+idx);
+  inp.value=name; inp.dataset.val=name; inp.classList.add('has-value');
+  document.getElementById('dd'+idx).classList.remove('open');
+  for (let i=1; i<=N; i++) {
+    if (i!==idx && document.getElementById('dd'+i).classList.contains('open'))
+      populateDd(i, document.getElementById('pi'+i).value);
+  }
+}
+function onKey(e, idx) {
+  const dd = document.getElementById('dd'+idx);
+  const items = [...dd.querySelectorAll('.ddi')];
+  const hi = dd.querySelector('.hi');
+  const hiIdx = hi ? items.indexOf(hi) : -1;
+  if (e.key==='ArrowDown') {
+    e.preventDefault(); if(hi) hi.classList.remove('hi');
+    const next = items[hiIdx+1]||items[0]; if(next) next.classList.add('hi');
+  } else if (e.key==='ArrowUp') {
+    e.preventDefault(); if(hi) hi.classList.remove('hi');
+    const prev = items[hiIdx-1]||items[items.length-1]; if(prev) prev.classList.add('hi');
+  } else if (e.key==='Enter') {
+    e.preventDefault();
+    const t = dd.querySelector('.hi')||items[0];
+    if (t) { if(t.classList.contains('add-custom')) addCustomAndPick(idx,t.dataset.n); else setPlayer(idx,t.dataset.n); }
+  } else if (e.key==='Escape') { closeDd(idx); }
+}
+
+function addEntry() {
+  const name  = document.getElementById('entrantName').value.trim();
+  const tb    = document.getElementById('tiebreaker').value.trim();
+  const pin   = document.getElementById('entryPin').value.trim();
+  const picks = Array.from({length:N}, (_,i)=>document.getElementById('pi'+(i+1))?.dataset.val||'').filter(Boolean);
+  const msg   = document.getElementById('formMsg');
+  msg.style.color = '#A32D2D';
+
+  if (!name)          { msg.textContent='Please enter your name.'; return; }
+  if (picks.length<5) { msg.textContent='Please select all 5 players.'; return; }
+  if (!pin || pin.length!==4) { msg.textContent='Please set a 4-digit PIN so you can edit your picks later.'; return; }
+  if (!db)            { msg.textContent='Firebase not connected — complete setup above first.'; return; }
+
+  const editingId = document.getElementById('picksGrid').dataset.editingId || null;
+
+  if (editingId) {
+    const old = entries.find(e => e._id === editingId);
+    const entry = { name, tb: tb||'?', picks, pin, paid: old ? old.paid : false, _ts: old ? old._ts : Date.now() };
+    db.ref('entries/' + editingId).set(entry)
+      .then(() => { msg.textContent='✅ Entry updated!'; msg.style.color='#B8510D'; })
+      .catch(e => { msg.textContent='Error: ' + e.message; });
+    delete document.getElementById('picksGrid').dataset.editingId;
+  } else {
+    if (entries.some(e => e.name.toLowerCase() === name.toLowerCase())) {
+      msg.textContent='An entry with that name already exists.'; return;
+    }
+    const entry = { name, tb: tb||'?', picks, pin, paid: false, _ts: Date.now() };
+    db.ref('entries').push(entry)
+      .then(() => { msg.textContent=''; })
+      .catch(e => { msg.textContent='Error saving: ' + e.message; });
+  }
+
+  document.getElementById('entrantName').value = '';
+  document.getElementById('tiebreaker').value  = '';
+  document.getElementById('entryPin').value    = '';
+  for (let i=1; i<=N; i++) {
+    const inp = document.getElementById('pi'+i);
+    if (inp) { inp.value=''; inp.dataset.val=''; inp.classList.remove('has-value'); }
+  }
+}
+
+function removeEntry(id) {
+  if (!db) return;
+  if (!confirm('Remove this entry?')) return;
+  db.ref('entries/'+id).remove();
+}
+
+function renderEntries() {
+  const el = document.getElementById('entriesList');
+  const ce = document.getElementById('entriesCount');
+  const notice = document.getElementById('hiddenNotice');
+  ce.textContent = entries.length ? `${entries.length} entr${entries.length===1?'y':'ies'}` : '';
+  const visible = picksVisible();
+  if (!visible && entries.length) notice.classList.remove('hidden');
+  else notice.classList.add('hidden');
+  if (!entries.length) {
+    el.innerHTML='<div class="no-entries">No entries yet. Be the first to submit above.</div>';
+    return;
+  }
+  el.innerHTML = entries.map((e,i)=>{
+    const picks = visible
+      ? e.picks.map(p=>`<span class="pick-chip">${getCountry(p)?`<span style="font-size:9px;font-weight:600;color:#888;margin-right:4px">${getCountry(p)}</span>`:``}${p}</span>`).join('')
+      : e.picks.map(()=>`<span class="pick-chip hidden-pick">hidden</span>`).join('');
+    const canEdit = !picksRevealed && new Date() < TOURNEY_START;
+    const editBtn = canEdit ? `<button class="btn btn-sm" onclick="openEditModal('${e._id}')">✏️ Edit</button>` : '';
+    return `<div class="entry-row ${e.paid?'':'unpaid'}">
+      <div class="entry-name">${e.name}</div>
+      <div class="entry-picks">${picks}</div>
+      <div class="entry-meta">
+        <span class="entry-tb">TB: ${visible?e.tb:'?'}</span>
+        <span class="paid-badge ${e.paid?'paid':'unpaid'}">${e.paid?'Paid':'Unpaid'}</span>
+        ${editBtn}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function norm(n){return n.toLowerCase().replace(/[^a-z\s]/g,'').replace(/\s+/g,' ').trim();}
+function getPos(pick){
+  for(const[k,v]of Object.entries(playerPositions)) if(norm(k)===norm(pick)) return v;
+  const ln=norm(pick).split(' ').pop();
+  for(const[k,v]of Object.entries(playerPositions)) if(norm(k).split(' ').pop()===ln) return v;
+  return null;
+}
+function computeEntry(e){
+  const scored=e.picks.map(p=>({name:p,pos:getPos(p)}));
+  // Normalise: pos>=60 (MC/WD/not found) counts as 60; null = not yet scored
+  const scoredNorm=scored.map(s=>({name:s.name,pos:s.pos===null?null:s.pos>=60?60:s.pos}));
+  const known=scoredNorm.filter(s=>s.pos!==null).map(s=>s.pos).sort((a,b)=>a-b);
+  const best4=known.slice(0,4);
+  const aggregate=best4.length===4?best4.reduce((a,b)=>a+b,0):null;
+  return{scored:scoredNorm,best4:[...best4],aggregate};
+}
+
+function renderLeaderboard() {
+  const body = document.getElementById('lbBody');
+  if (!entries.length) {
+    body.innerHTML='<tr><td colspan="4" class="empty-lb">No entries yet.</td></tr>';
+    return;
+  }
+  const visible = picksVisible();
+  const comp = entries.map(e=>({...e,...computeEntry(e)}));
+  const withA = comp.filter(e=>e.aggregate!==null).sort((a,b)=>{
+    if(a.aggregate!==b.aggregate) return a.aggregate-b.aggregate;
+    const ta=parseInt(a.tb),tb=parseInt(b.tb);
+    if(!isNaN(ta)&&!isNaN(tb)) return Math.abs(ta)-Math.abs(tb);
+    return 0;
+  });
+  const noA = comp.filter(e=>e.aggregate===null);
+  const sorted = [...withA,...noA];
+
+  body.innerHTML = sorted.map((e,rank)=>{
+    const pos=rank+1;
+    const rc=pos===1?'rank-1':pos===2?'rank-2':'';
+    const pc=pos===1?'pos-1':pos===2?'pos-2':'';
+    const ac=pos===1?'agg agg-gold':pos===2?'agg agg-silver':'agg';
+    const unpaidRow=!e.paid?'row-unpaid':'';
+    const c4=[...e.best4];
+
+    let chips;
+    if (!visible) {
+      chips = e.picks.map(()=>`<span class="pc hidden-pc">hidden</span>`).join('');
+    } else {
+      chips = e.scored.map(s=>{
+        if(s.pos===null) return `<span class="pc unk">${s.name.split(' ').pop()} ?</span>`;
+        const idx=c4.indexOf(s.pos);
+        const counted=idx>-1;
+        if(counted) c4.splice(idx,1);
+        if(s.pos>=60) return `<span class="pc mc">${s.name.split(' ').pop()} MC</span>`;
+        return `<span class="pc ${counted?'ok':''}">${s.name.split(' ').pop()} ${s.pos}</span>`;
+      }).join('');
+    }
+
+    const unpaidFlag=!e.paid?`<span class="unpaid-flag">unpaid</span>`:'';
+    const aggCell = !visible
+      ? `<span class="agg-pending">hidden</span>`
+      : e.aggregate!==null ? `<span class="${ac}">${e.aggregate}</span>` : `<span class="agg-pending">…</span>`;
+
+    return `<tr class="${[rc,unpaidRow].filter(Boolean).join(' ')}">
+      <td class="pos-cell ${pc}">${visible&&e.aggregate!==null?pos:'—'}</td>
+      <td class="name-cell"><div class="nm">${e.name}${unpaidFlag}</div><div class="tb-hint">TB: ${visible?e.tb:'?'}</div></td>
+      <td class="r">${aggCell}</td>
+      <td><div class="pchips">${chips}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+async function fetchScores() {
+  if (!entries.length) return;
+  const workerUrl = getWorkerUrl();
+  if (!workerUrl) {
+    document.getElementById('errNote').textContent = 'Worker URL not set — open the setup banner above and add your Cloudflare Worker URL to enable live scores.';
+    // firebase not connected
+    return;
+  }
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Fetching…';
+  clearInterval(cdTimer);
+  document.getElementById('errNote').textContent='';
+  const allPicks=[...new Set(entries.flatMap(e=>e.picks))];
+  const prompt=`Search for "Valero Texas Open 2026 R2 leaderboard MacIntyre Fleetwood Aberg standings" and also search for "Valero Texas Open live scores 2026 current positions standings".
+
+Extract the current leaderboard position number (1=leader) for each of these players:
+${allPicks.join(', ')}
+
+Then output ONLY this JSON (no text before or after):
+{"round":"R2","players":[{"name":"Robert MacIntyre","position":1,"status":"active"},{"name":"Tommy Fleetwood","position":5,"status":"active"}]}
+
+For any player not found use position 99 and status "mc". Output ONLY the JSON.`;
+  try {
+    const resp=await fetch(workerUrl,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:2000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await resp.json();
+    // Use all text blocks joined — web search returns mixed block types
+    const allText=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const m=allText.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('No JSON returned');
+    const parsed=JSON.parse(m[0]);
+    playerPositions={};
+    (parsed.players||[]).forEach(p=>{playerPositions[p.name]=p.position;});
+    const now=new Date();
+    document.getElementById('lastUpdated').textContent=
+      `Updated ${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'})} · ${parsed.round||'In progress'}`;
+    renderLeaderboard();
+    startCd();
+  } catch(err) {
+    document.getElementById('errNote').textContent='Could not fetch: '+err.message;
+    renderLeaderboard();
+    startCd();
+  } finally {
+    btn.disabled=false; btn.innerHTML='↻ Refresh scores';
+  }
+}
+
+function startCd(){
+  clearInterval(cdTimer); cdCount=60;
+  cdTimer=setInterval(()=>{
+    cdCount--;
+    const el=document.getElementById('countdown');
+    if(el) el.textContent=cdCount>0?`Auto in ${cdCount}s`:'';
+    if(cdCount<=0) fetchScores();
+  },1000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+const FIREBASE_URL = 'https://valero2026-default-rtdb.europe-west1.firebasedatabase.app';
+// firebase connected
+initFirebase(FIREBASE_URL);
+buildPicks();
+renderEntries();
+// If tournament has started, hide entry form and auto-switch to leaderboard
+if (new Date() >= TOURNEY_START) {
+  const card = document.getElementById('entryFormCard');
+  if (card) card.style.display = 'none';
+  const locked = document.getElementById('lockedNotice');
+  if (locked) locked.classList.remove('hidden');
+  // Auto-show leaderboard tab
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-leaderboard').classList.add('active');
+  const lbTab = document.querySelectorAll('.tab')[1];
+  if (lbTab) lbTab.classList.add('active');
+}
+</script>
+</body>
+</html>bottom:1.5rem;flex-wrap:wrap;gap:10px;padding-bottom:1.25rem;border-bottom:1px solid #e8e8e8}
 .title{font-family:'Playfair Display',serif;font-size:26px;letter-spacing:-0.3px}
 .title span{color:#B8510D}
 .subtitle{font-size:12px;color:#777;margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
