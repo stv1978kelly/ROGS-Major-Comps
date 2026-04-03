@@ -998,7 +998,7 @@ function renderLeaderboard() {
         const idx=c4.indexOf(s.pos);
         const counted=idx>-1;
         if(counted) c4.splice(idx,1);
-        if(s.pos===60) return `<span class="pc mc">${s.name.split(' ').pop()} MC</span>`;
+        if(s.pos>=60) return `<span class="pc mc">${s.name.split(' ').pop()} MC</span>`;
         return `<span class="pc ${counted?'ok':''}">${s.name.split(' ').pop()} ${s.pos}</span>`;
       }).join('');
     }
@@ -1030,18 +1030,15 @@ async function fetchScores() {
   clearInterval(cdTimer);
   document.getElementById('errNote').textContent='';
   const allPicks=[...new Set(entries.flatMap(e=>e.picks))];
-  const prompt=`Search for the current live leaderboard of the Valero Texas Open 2026 golf tournament at TPC San Antonio.
-I need the current leaderboard POSITION NUMBER (not golf score) for these players: ${allPicks.join(', ')}
+  const prompt=`Search for "Valero Texas Open 2026 R2 leaderboard MacIntyre Fleetwood Aberg standings" and also search for "Valero Texas Open live scores 2026 current positions standings".
 
-Return ONLY valid JSON, no markdown, no backticks:
-{"round":"R1","players":[{"name":"Tommy Fleetwood","position":1,"status":"active"},{"name":"Jordan Spieth","position":5,"status":"active"},{"name":"Brian Harman","position":60,"status":"mc"}]}
+Extract the current leaderboard position number (1=leader) for each of these players:
+${allPicks.join(', ')}
 
-Rules:
-- position = integer leaderboard position (1=leader, 2=second, etc.)
-- status: "active"=still playing, "mc"=missed cut, "wd"=withdrawn
-- Missed cut or withdrawn = position 60
-- Include ALL players I listed; if not found use position 60 status mc
-- Only return players I listed above`;
+Then output ONLY this JSON (no text before or after):
+{"round":"R2","players":[{"name":"Robert MacIntyre","position":1,"status":"active"},{"name":"Tommy Fleetwood","position":5,"status":"active"}]}
+
+For any player not found use position 99 and status "mc". Output ONLY the JSON.`;
   try {
     const resp=await fetch(workerUrl,{
       method:'POST',
@@ -1053,8 +1050,9 @@ Rules:
       })
     });
     const data=await resp.json();
-    const text=(data.content||[]).map(b=>b.type==='text'?b.text:'').join('');
-    const m=text.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
+    // Use all text blocks joined — web search returns mixed block types
+    const allText=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const m=allText.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
     if(!m) throw new Error('No JSON returned');
     const parsed=JSON.parse(m[0]);
     playerPositions={};
