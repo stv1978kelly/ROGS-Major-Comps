@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Valero Texas Open 2026 · Fantasy Leaderboard</title>
+<meta name="description" content="Fantasy leaderboard for the 2026 Valero Texas Open at TPC San Antonio">
+<meta name="theme-color" content="#B8510D">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Valero 2026">
+<link rel="manifest" href="manifest.json">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Source+Sans+3:wght@400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -339,11 +346,11 @@ td{padding:11px 14px;vertical-align:middle}
           <div class="lb-live"><span class="live-dot"></span>Live — Valero Texas Open</div>
           <div id="roundBadge" style="display:none;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:#FEF0E6;color:#B8510D;border:1px solid #F5B985;text-transform:uppercase;letter-spacing:.05em"></div>
         </div>
-        <div class="last-updated" id="lastUpdated">Click ↻ Update scores to fetch the latest leaderboard</div>
+        <div class="last-updated" id="lastUpdated">Scores updated automatically every 2 hours</div>
         <div class="err-note" id="errNote"></div>
       </div>
       <div class="refresh-group">
-        <button class="btn btn-sm" id="refreshBtn" onclick="fetchScores()">↻ Update scores</button>
+
       </div>
     </div>
     <div class="table-wrap">
@@ -563,6 +570,13 @@ function listenToData() {
   });
   db.ref('meta/customPlayers').on('value', snap => {
     customPlayers = snap.val() ? Object.values(snap.val()) : [];
+  });
+  // Live-listen for score updates written by the cron worker
+  db.ref('meta/scores').on('value', snap => {
+    const val = snap.val();
+    if (val && val.players && val.players.length) {
+      applyScores(val);
+    }
   });
 }
 
@@ -999,79 +1013,37 @@ function renderLeaderboard() {
   }).join('');
 }
 
-async function fetchScores() {
-  if (!entries.length) return;
-  const workerUrl = getWorkerUrl();
-  const btn = document.getElementById('refreshBtn');
-  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Fetching…';
-  clearInterval(cdTimer);
-  document.getElementById('errNote').textContent='';
-  const allPicks=[...new Set(entries.flatMap(e=>e.picks))];
+function applyScores(parsed) {
+  playerPositions = {};
+  (parsed.players || []).forEach(p => { playerPositions[p.name] = p.position; });
+  const roundLabel = parsed.round || '';
+  const roundMap = {'R1':'Round 1','R2':'Round 2','R3':'Round 3','R4':'Round 4'};
+  const roundFull = roundMap[roundLabel] || roundLabel;
+  const badge = document.getElementById('roundBadge');
+  if (badge && roundFull) { badge.textContent = roundFull; badge.style.display = 'inline-flex'; }
 
-  // Two different prompts — try first, fall back to second if no JSON
-  const prompts = [
-    `Search for "Valero Texas Open 2026 leaderboard standings" and return the current round leaderboard positions.
-
-For each of these players find their current leaderboard position number (1=leader, 2=second, etc):
-${allPicks.join(', ')}
-
-You MUST respond with ONLY a JSON object. No explanation, no prose. Just JSON:
-{"round":"R2","players":[{"name":"Robert MacIntyre","position":1,"status":"active"},{"name":"Tommy Fleetwood","position":5,"status":"active"},{"name":"Adam Schenk","position":99,"status":"mc"}]}
-
-Use position 99 / status "mc" for players not found. Output ONLY the JSON.`,
-
-    `Search for "Valero Texas Open 2026 R2 scores" and "Valero Texas Open leaderboard today 2026".
-
-I need leaderboard positions for: ${allPicks.join(', ')}
-
-Reply with ONLY this JSON, nothing else:
-{"round":"R2","players":[{"name":"PlayerName","position":1,"status":"active"}]}
-
-Position 99 + status "mc" for anyone not found. ONLY JSON in your response.`
-  ];
-
-  let lastErr = '';
-  for (let attempt = 0; attempt < prompts.length; attempt++) {
-    try {
-      const resp=await fetch(workerUrl,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          model:'claude-sonnet-4-20250514',max_tokens:4000,
-          tools:[{type:'web_search_20250305',name:'web_search'}],
-          messages:[{role:'user',content:prompts[attempt]}]
-        })
-      });
-      const data=await resp.json();
-      const allText=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-      const m=allText.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
-      if(!m) { lastErr='No JSON returned'; continue; }
-      const parsed=JSON.parse(m[0]);
-      if (!parsed.players || !parsed.players.length) { lastErr='Empty players list'; continue; }
-      playerPositions={};
-      (parsed.players||[]).forEach(p=>{playerPositions[p.name]=p.position;});
-      const now=new Date();
-      const roundLabel = parsed.round || '';
-      const roundMap = {'R1':'Round 1','R2':'Round 2','R3':'Round 3','R4':'Round 4'};
-      const roundFull = roundMap[roundLabel] || roundLabel;
-      const badge = document.getElementById('roundBadge');
-      if (badge && roundFull) { badge.textContent = roundFull; badge.style.display = 'inline-flex'; }
-      document.getElementById('lastUpdated').textContent=
-        `Updated ${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
-      document.getElementById('errNote').textContent='';
-      renderLeaderboard();
-      startCd();
-      btn.disabled=false; btn.innerHTML='↻ Update scores';
-      return; // success
-    } catch(err) {
-      lastErr = err.message;
-    }
-  }
-  // All attempts failed
-  document.getElementById('errNote').textContent='Could not fetch: '+lastErr;
+  // Show last updated + next update times
+  const updated = parsed.updatedAt ? new Date(parsed.updatedAt) : null;
+  const next = parsed.nextUpdateAt ? new Date(parsed.nextUpdateAt) : null;
+  const fmt = d => d ? d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) + ' ' + d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '—';
+  document.getElementById('lastUpdated').textContent = `Updated: ${fmt(updated)} · Next update: ${fmt(next)}`;
+  document.getElementById('errNote').textContent = '';
   renderLeaderboard();
-  startCd();
-  btn.disabled=false; btn.innerHTML='↻ Update scores';
+}
+
+async function loadScoresFromFirebase() {
+  // Read scores cached by the worker cron — no API cost
+  try {
+    const r = await fetch(FIREBASE_URL + '/meta/scores.json');
+    const parsed = await r.json();
+    if (parsed && parsed.players && parsed.players.length) {
+      applyScores(parsed);
+    } else {
+      document.getElementById('lastUpdated').textContent = 'Scores not yet available — updated automatically every 2 hours';
+    }
+  } catch(e) {
+    document.getElementById('errNote').textContent = 'Could not load scores: ' + e.message;
+  }
 }
 
 function startCd(){ clearInterval(cdTimer); }
@@ -1082,6 +1054,8 @@ const FIREBASE_URL = 'https://valero2026-default-rtdb.europe-west1.firebasedatab
 initFirebase(FIREBASE_URL);
 buildPicks();
 renderEntries();
+// Load cached scores from Firebase (written by worker cron every 2hrs)
+loadScoresFromFirebase();
 // If tournament has started, hide entry form and auto-switch to leaderboard
 if (new Date() >= TOURNEY_START) {
   const card = document.getElementById('entryFormCard');
