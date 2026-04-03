@@ -306,7 +306,7 @@ td{padding:11px 14px;vertical-align:middle}
       <div class="admin-list" id="adminList"></div>
     </div>
 
-    <div class="form-card">
+    <div class="form-card" id="entryFormCard">
       <div class="form-section-title">Submit your entry</div>
       <div class="form-top">
         <div class="field-group"><label>Your name</label><input type="text" id="entrantName" placeholder="e.g. John Smith" autocomplete="off"></div>
@@ -1072,6 +1072,13 @@ const FIREBASE_URL = 'https://valero2026-default-rtdb.europe-west1.firebasedatab
 initFirebase(FIREBASE_URL);
 buildPicks();
 renderEntries();
+// Hide entry form if tournament has started
+if (new Date() >= TOURNEY_START) {
+  const card = document.getElementById('entryFormCard');
+  if (card) {
+    card.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:#888;font-size:14px">🏌️ <strong style="color:#1a1a1a">Tournament is underway</strong><br><span style="font-size:12px;margin-top:6px;display:block">Entries are locked — view the Leaderboard to see standings</span></div>';
+  }
+}
 </script>
 </body>
 </html>
