@@ -141,7 +141,6 @@ input:checked+.slider:before{transform:translateX(18px)}
 .last-updated{font-size:11px;color:#bbb;margin-top:3px}
 .err-note{font-size:11px;color:#A32D2D;margin-top:3px}
 .refresh-group{display:flex;align-items:center;gap:8px}
-.countdown{font-size:11px;color:#ccc;font-family:'Source Code Pro',monospace}
 .table-wrap{border:1px solid #e8e8e8;border-radius:12px;overflow:hidden}
 table{width:100%;border-collapse:collapse;font-size:13px}
 thead tr{background:#f5f5f5}
@@ -344,8 +343,7 @@ td{padding:11px 14px;vertical-align:middle}
         <div class="err-note" id="errNote"></div>
       </div>
       <div class="refresh-group">
-        <span class="countdown" id="countdown"></span>
-        <button class="btn btn-sm" id="refreshBtn" onclick="fetchScores()">↻ Refresh scores</button>
+        <button class="btn btn-sm" id="refreshBtn" onclick="fetchScores()">↻ Update scores</button>
       </div>
     </div>
     <div class="table-wrap">
@@ -1004,71 +1002,79 @@ function renderLeaderboard() {
 async function fetchScores() {
   if (!entries.length) return;
   const workerUrl = getWorkerUrl();
-  if (!workerUrl) {
-    document.getElementById('errNote').textContent = 'Worker URL not set — open the setup banner above and add your Cloudflare Worker URL to enable live scores.';
-    // firebase not connected
-    return;
-  }
   const btn = document.getElementById('refreshBtn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Fetching…';
   clearInterval(cdTimer);
   document.getElementById('errNote').textContent='';
   const allPicks=[...new Set(entries.flatMap(e=>e.picks))];
-  const prompt=`Search for "Valero Texas Open 2026 R2 leaderboard MacIntyre Fleetwood Aberg standings" and also search for "Valero Texas Open live scores 2026 current positions standings".
 
-Extract the current leaderboard position number (1=leader) for each of these players:
+  // Two different prompts — try first, fall back to second if no JSON
+  const prompts = [
+    `Search for "Valero Texas Open 2026 leaderboard standings" and return the current round leaderboard positions.
+
+For each of these players find their current leaderboard position number (1=leader, 2=second, etc):
 ${allPicks.join(', ')}
 
-Then output ONLY this JSON (no text before or after):
-{"round":"R2","players":[{"name":"Robert MacIntyre","position":1,"status":"active"},{"name":"Tommy Fleetwood","position":5,"status":"active"}]}
+You MUST respond with ONLY a JSON object. No explanation, no prose. Just JSON:
+{"round":"R2","players":[{"name":"Robert MacIntyre","position":1,"status":"active"},{"name":"Tommy Fleetwood","position":5,"status":"active"},{"name":"Adam Schenk","position":99,"status":"mc"}]}
 
-For any player not found use position 99 and status "mc". Output ONLY the JSON.`;
-  try {
-    const resp=await fetch(workerUrl,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:2000,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    const data=await resp.json();
-    // Use all text blocks joined — web search returns mixed block types
-    const allText=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-    const m=allText.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
-    if(!m) throw new Error('No JSON returned');
-    const parsed=JSON.parse(m[0]);
-    playerPositions={};
-    (parsed.players||[]).forEach(p=>{playerPositions[p.name]=p.position;});
-    const now=new Date();
-    const roundLabel = parsed.round || '';
-    const roundMap = {'R1':'Round 1','R2':'Round 2','R3':'Round 3','R4':'Round 4'};
-    const roundFull = roundMap[roundLabel] || roundLabel;
-    const badge = document.getElementById('roundBadge');
-    if (badge && roundFull) { badge.textContent = roundFull; badge.style.display = 'inline-flex'; }
-    document.getElementById('lastUpdated').textContent=
-      `Updated ${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
-    renderLeaderboard();
-    startCd();
-  } catch(err) {
-    document.getElementById('errNote').textContent='Could not fetch: '+err.message;
-    renderLeaderboard();
-    startCd();
-  } finally {
-    btn.disabled=false; btn.innerHTML='↻ Refresh scores';
+Use position 99 / status "mc" for players not found. Output ONLY the JSON.`,
+
+    `Search for "Valero Texas Open 2026 R2 scores" and "Valero Texas Open leaderboard today 2026".
+
+I need leaderboard positions for: ${allPicks.join(', ')}
+
+Reply with ONLY this JSON, nothing else:
+{"round":"R2","players":[{"name":"PlayerName","position":1,"status":"active"}]}
+
+Position 99 + status "mc" for anyone not found. ONLY JSON in your response.`
+  ];
+
+  let lastErr = '';
+  for (let attempt = 0; attempt < prompts.length; attempt++) {
+    try {
+      const resp=await fetch(workerUrl,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          model:'claude-sonnet-4-20250514',max_tokens:4000,
+          tools:[{type:'web_search_20250305',name:'web_search'}],
+          messages:[{role:'user',content:prompts[attempt]}]
+        })
+      });
+      const data=await resp.json();
+      const allText=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+      const m=allText.replace(/```json|```/g,'').match(/\{[\s\S]*\}/);
+      if(!m) { lastErr='No JSON returned'; continue; }
+      const parsed=JSON.parse(m[0]);
+      if (!parsed.players || !parsed.players.length) { lastErr='Empty players list'; continue; }
+      playerPositions={};
+      (parsed.players||[]).forEach(p=>{playerPositions[p.name]=p.position;});
+      const now=new Date();
+      const roundLabel = parsed.round || '';
+      const roundMap = {'R1':'Round 1','R2':'Round 2','R3':'Round 3','R4':'Round 4'};
+      const roundFull = roundMap[roundLabel] || roundLabel;
+      const badge = document.getElementById('roundBadge');
+      if (badge && roundFull) { badge.textContent = roundFull; badge.style.display = 'inline-flex'; }
+      document.getElementById('lastUpdated').textContent=
+        `Updated ${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}`;
+      document.getElementById('errNote').textContent='';
+      renderLeaderboard();
+      startCd();
+      btn.disabled=false; btn.innerHTML='↻ Update scores';
+      return; // success
+    } catch(err) {
+      lastErr = err.message;
+    }
   }
+  // All attempts failed
+  document.getElementById('errNote').textContent='Could not fetch: '+lastErr;
+  renderLeaderboard();
+  startCd();
+  btn.disabled=false; btn.innerHTML='↻ Update scores';
 }
 
-function startCd(){
-  clearInterval(cdTimer); cdCount=60;
-  cdTimer=setInterval(()=>{
-    cdCount--;
-    const el=document.getElementById('countdown');
-    if(el) el.textContent=cdCount>0?`Auto in ${cdCount}s`:'';
-    if(cdCount<=0) fetchScores();
-  },1000);
-}
+function startCd(){ clearInterval(cdTimer); }
 
 // ── INIT ──────────────────────────────────────────────────────────
 const FIREBASE_URL = 'https://valero2026-default-rtdb.europe-west1.firebasedatabase.app';
