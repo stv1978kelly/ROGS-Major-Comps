@@ -958,10 +958,12 @@ function getPos(pick){
 }
 function computeEntry(e){
   const scored=e.picks.map(p=>({name:p,pos:getPos(p)}));
-  const known=scored.filter(s=>s.pos!==null).map(s=>s.pos).sort((a,b)=>a-b);
+  // Normalise: pos>=60 (MC/WD/not found) counts as 60; null = not yet scored
+  const scoredNorm=scored.map(s=>({name:s.name,pos:s.pos===null?null:s.pos>=60?60:s.pos}));
+  const known=scoredNorm.filter(s=>s.pos!==null).map(s=>s.pos).sort((a,b)=>a-b);
   const best4=known.slice(0,4);
   const aggregate=best4.length===4?best4.reduce((a,b)=>a+b,0):null;
-  return{scored,best4:[...best4],aggregate};
+  return{scored:scoredNorm,best4:[...best4],aggregate};
 }
 
 function renderLeaderboard() {
