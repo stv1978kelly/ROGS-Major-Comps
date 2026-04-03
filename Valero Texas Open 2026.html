@@ -279,17 +279,55 @@ td{padding:11px 14px;vertical-align:middle}
   </div>
 
   <div class="config-banner hidden" id="configBanner">
-    <strong>⚙️ One-time setup required</strong> — to share data across all devices you need a free Firebase database.<br><br>
-    <strong>Steps (5 minutes):</strong><br>
-    1. Go to <strong>console.firebase.google.com</strong> → click <strong>Add project</strong> → name it <em>valero2026</em> → Continue<br>
-    2. Click <strong>Build → Realtime Database → Create database</strong> → choose <em>Start in test mode</em> → Enable<br>
-    3. Copy the URL like <code>https://valero2026-xxxxx-default-rtdb.firebasedatabase.app</code><br>
-    4. Paste it below and click Save:<br>
+    <strong>⚙️ One-time setup required</strong> — two things needed: a Firebase database (for shared entries) and a Cloudflare Worker (for live scores).<br><br>
+
+    <strong>A) Firebase database (share entries across devices)</strong><br>
+    1. Go to <strong>console.firebase.google.com</strong> → Add project → name it <em>valero2026</em> → Continue<br>
+    2. Build → Realtime Database → Create database → Start in test mode → Enable<br>
+    3. Copy the URL (e.g. <code>https://valero2026-xxxxx-default-rtdb.firebasedatabase.app</code>) and paste below<br>
     <div class="setup-form">
-      <input class="setup-input" id="fbUrlInput" placeholder="https://your-project-default-rtdb.firebaseio.com" type="url">
-      <button class="btn-setup" onclick="saveFirebaseConfig()">Save &amp; Connect</button>
+      <input class="setup-input" id="fbUrlInput" placeholder="https://your-project-default-rtdb.firebasedatabase.app" type="url">
+      <button class="btn-setup" onclick="saveFirebaseConfig()">Save Firebase URL</button>
     </div>
-    <div class="setup-note">Only needs to be done once. After saving, anyone with the link can add entries and see the leaderboard live.</div>
+
+    <br><strong>B) Cloudflare Worker (live score fetching)</strong><br>
+    1. Go to <strong>dash.cloudflare.com</strong> → Workers &amp; Pages → Create → Create Worker<br>
+    2. Replace all code with the worker script below, swap in your Anthropic API key, click Deploy<br>
+    3. Copy your worker URL (e.g. <code>https://my-worker.yourname.workers.dev</code>) and paste below<br>
+    <div class="setup-form">
+      <input class="setup-input" id="workerUrlInput" placeholder="https://my-worker.yourname.workers.dev" type="url">
+      <button class="btn-setup" onclick="saveWorkerConfig()">Save Worker URL</button>
+    </div>
+    <details style="margin-top:.75rem">
+      <summary style="font-size:12px;cursor:pointer;color:#854F0B;font-weight:600">Show worker script to copy ▾</summary>
+      <pre style="background:#fff;border:1px solid #FAC775;border-radius:6px;padding:.75rem;font-size:11px;font-family:monospace;overflow-x:auto;margin-top:.5rem;white-space:pre-wrap">export default {
+  async fetch(request) {
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }});
+    }
+    const body = await request.json();
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'YOUR_ANTHROPIC_API_KEY',
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify(body)
+    });
+    const data = await resp.json();
+    return new Response(JSON.stringify(data), { headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    }});
+  }
+};</pre>
+    </details>
+    <div class="setup-note" style="margin-top:.5rem">Both only need to be set up once. Your Anthropic API key lives securely in the Worker — never in this page.</div>
   </div>
 
   <div class="tabs">
@@ -542,6 +580,20 @@ function saveFirebaseConfig() {
   }
   localStorage.setItem('valero2026_fburl', url);
   initFirebase(url);
+}
+
+function saveWorkerConfig() {
+  const url = document.getElementById('workerUrlInput').value.trim().replace(/\/$/, '');
+  if (!url.startsWith('https://')) {
+    alert('Please paste a valid Cloudflare Worker URL starting with https://');
+    return;
+  }
+  localStorage.setItem('valero2026_workerurl', url);
+  alert('Worker URL saved! Live score fetching is now enabled.');
+}
+
+function getWorkerUrl() {
+  return localStorage.getItem('valero2026_workerurl') || '';
 }
 
 function initFirebase(url) {
@@ -1017,6 +1069,12 @@ function renderLeaderboard() {
 
 async function fetchScores() {
   if (!entries.length) return;
+  const workerUrl = getWorkerUrl();
+  if (!workerUrl) {
+    document.getElementById('errNote').textContent = 'Worker URL not set — open the setup banner above and add your Cloudflare Worker URL to enable live scores.';
+    document.getElementById('configBanner').classList.remove('hidden');
+    return;
+  }
   const btn = document.getElementById('refreshBtn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Fetching…';
   clearInterval(cdTimer);
@@ -1035,8 +1093,9 @@ Rules:
 - Include ALL players I listed; if not found use position 60 status mc
 - Only return players I listed above`;
   try {
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
+    const resp=await fetch(workerUrl,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',max_tokens:2000,
         tools:[{type:'web_search_20250305',name:'web_search'}],
@@ -1075,14 +1134,23 @@ function startCd(){
 }
 
 // ── INIT ──────────────────────────────────────────────────────────
-// Replace with your own Firebase URL, or use the setup banner above
-const SAVED_URL = localStorage.getItem('valero2026_fburl');
-if (SAVED_URL) {
-  initFirebase(SAVED_URL);
+const SAVED_FB_URL = localStorage.getItem('valero2026_fburl');
+const SAVED_WORKER_URL = localStorage.getItem('valero2026_workerurl');
+
+if (SAVED_FB_URL) {
+  initFirebase(SAVED_FB_URL);
 } else {
   document.getElementById('configBanner').classList.remove('hidden');
   setSyncStatus('Not connected — complete setup above', true);
 }
+
+if (SAVED_WORKER_URL) {
+  const wi = document.getElementById('workerUrlInput');
+  if (wi) wi.value = SAVED_WORKER_URL;
+} else {
+  document.getElementById('configBanner').classList.remove('hidden');
+}
+
 buildPicks();
 renderEntries();
 </script>
