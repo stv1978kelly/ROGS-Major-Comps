@@ -277,17 +277,7 @@ td{padding:11px 14px;vertical-align:middle}
       <div class="sync-status" id="syncStatus"></div>
     </div>
   </div>
-
-  <div class="config-banner hidden" id="configBanner">
-    <strong>⚙️ One-time setup required</strong> — connect a Firebase Realtime Database so entries are shared across all devices.<br><br>
-    1. Go to <strong>console.firebase.google.com</strong> → Add project → name it <em>valero2026</em> → Continue<br>
-    2. Build → Realtime Database → Create database → Start in test mode → Enable<br>
-    3. Copy the URL (e.g. <code>https://valero2026-xxxxx-default-rtdb.firebasedatabase.app</code>) and paste below:<br>
-    <div class="setup-form">
-      <input class="setup-input" id="fbUrlInput" placeholder="https://your-project-default-rtdb.firebasedatabase.app" type="url">
-      <button class="btn-setup" onclick="saveFirebaseConfig()">Save &amp; Connect</button>
-    </div>
-    <div class="setup-note">Only needs to be done once. Live score fetching is already configured.</div>
+<div class="setup-note">Only needs to be done once. Live score fetching is already configured.</div>
   </div>
 
   <div class="tabs">
@@ -531,13 +521,6 @@ function getField() {
 }
 function getCountry(name) { return FIELD_BASE[name] || ''; }
 function picksVisible() { return picksRevealed || new Date() >= TOURNEY_START || adminLoggedIn; }
-
-function saveFirebaseConfig() {
-  const url = document.getElementById('fbUrlInput').value.trim().replace(/\/$/, '');
-  if (!url.startsWith('https://') || (!url.includes('firebaseio.com') && !url.includes('firebasedatabase.app'))) {
-    alert('Please paste a valid Firebase Realtime Database URL');
-    return;
-  }
   localStorage.setItem('valero2026_fburl', url);
   initFirebase(url);
 }
@@ -550,7 +533,7 @@ function initFirebase(url) {
   try {
     const app = firebase.initializeApp({ databaseURL: url }, 'valero2026');
     db = firebase.database(app);
-    document.getElementById('configBanner').classList.add('hidden');
+    // firebase connected
     setSyncStatus('Connected to Firebase', false);
     listenToData();
   } catch(e) {
@@ -1024,7 +1007,7 @@ async function fetchScores() {
   const workerUrl = getWorkerUrl();
   if (!workerUrl) {
     document.getElementById('errNote').textContent = 'Worker URL not set — open the setup banner above and add your Cloudflare Worker URL to enable live scores.';
-    document.getElementById('configBanner').classList.remove('hidden');
+    // firebase not connected
     return;
   }
   const btn = document.getElementById('refreshBtn');
@@ -1084,13 +1067,9 @@ function startCd(){
 }
 
 // ── INIT ──────────────────────────────────────────────────────────
-const SAVED_FB_URL = localStorage.getItem('valero2026_fburl');
-if (SAVED_FB_URL) {
-  initFirebase(SAVED_FB_URL);
-} else {
-  document.getElementById('configBanner').classList.remove('hidden');
-  setSyncStatus('Not connected — complete setup above', true);
-}
+const FIREBASE_URL = 'https://valero2026-default-rtdb.europe-west1.firebasedatabase.app';
+// firebase connected
+initFirebase(FIREBASE_URL);
 buildPicks();
 renderEntries();
 </script>
